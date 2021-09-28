@@ -1,0 +1,196 @@
+\documentclass[10pt]{beamer}
+\usetheme{Madrid}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage{pifont}
+%\usepackage{graphicx}
+%\setbeamertemplate{itemize item}{\scriptsize\raise1.25pt\hbox{\donotcoloroutermaths$\blacktriangleright$}}
+\setbeamertemplate{itemize item}{\ding{224}}
+\setbeamertemplate{itemize subitem}{\scriptsize \ding{117}}
+\setbeamertemplate{itemize subsubitem}{\tiny \raise1.25pt\hbox{\ding{107}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subtitle[(Statistical Genetics] {(Fundamentals) of Statistical Genetics}
+\title{Module 15 - GWAS and Beyond}
+\author{Lei Sun}
+\date{}
+\institute[University of Toronto]
+{Department of Statistical Sciences, FAS \\Division of Biostatistics, DLSPH\\ University of Toronto} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{ \titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Outline}
+
+
+\begin{itemize}
+\item {\bf Chapter 11 - Genome-wide Association Studies (GWAS)}: the WTCCC example
+\bigskip
+\item {\bf Chapter 10 - Advanced Topics}: R demo of multiple hypothesis testing 
+\bigskip
+\item {\bf Chapter 12 - Looking Toward the Future}: some brief discussions.
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Chapter 11 - GWAS}
+
+
+\begin{itemize}
+\item We will use the \href{http://www.nature.com/nature/journal/v447/n7145/full/nature05911.html}
+{\textcolor{blue}{``first" GWAS study conducted by the Wellcome Trust Case Control Consortium (WTCCC)}} 
+as an example.   
+\bigskip
+\item See \alert{separate notes/slides} prepared back in 2007 discussing the WTCCC GWAS in the 
+\href{http://www.stage.utoronto.ca/home/smg}{\textcolor{blue}{SMG}} journal club and research seminar.  
+Practices/issues fortunately/unfortunately have not changed much!
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[allowframebreaks]
+\frametitle{Chapter 10/12 - Advanced Topics/Looking Toward the Future}
+
+\begin{itemize}
+\item The multiple hypothesis testing problem: 
+%\href{http://www.utstat.toronto.edu/sun/StatGene-R/R-statgene-module-17-testing.R} {\textcolor{blue}{R demo.}}
+\smallskip
+\item[] For graduate students: 
+\href{http://www.utstat.toronto.edu/sun/multitesting-index.html}
+{\textcolor{blue}{STA4515-Multiple Hypothesis Testing and Its Applications}}
+\bigskip
+
+\item Monte Carlo methods: we have seen various examples in posted R codes.
+\bigskip
+
+\item We will not be able to discuss
+\begin{itemize}
+\item Haplotype analysis
+\item Interaction model
+
+\item Gene-based analysis: joint analysis of multiple SNPs
+\item Pleiotropy: joint analysis of multiple phenotypes.
+\item Pathway analysis
+\item Meta-analysis with or without heterogeneity
+\item Measurement errors or uncertainties
+\item Longitudinal data (correlated measurements)
+\item Design issues: population vs. family, single-stage vs. multi-stage etc.
+
+\item Next generation sequencing
+\item Different `omic' data: microarray, methylation, function annotation etc.
+\item Data integration
+\item Many more ...
+\end{itemize}
+\bigskip
+
+% BIG data: heterogeneity issue, multiple testing, small p-values, tail distribution not accurate
+\item Big data and recall Tim Harford's \href{http://onlinelibrary.wiley.com/doi/10.1111/j.1740-9713.2014.00778.x/epdf}{\textcolor{blue}
+{Big data: are we making a big mistake?}}. 
+\begin{itemize}
+{\scriptsize \it 
+\item While big data promise much to scientists, entrepreneurs and governments, they are doomed to disappoint us if we ignore some very \textcolor{red}{familiar statistical lessons}.
+\item There are a lot of \textcolor{red}{small data problems} that occur in big data.  They don't disappear because you’ve got lots of the stuff.  They get worse.  
+%GWAS 100K samples for 10M SNPs.
+\item Data contain \textcolor{red}{systematic biases} and it takes careful thought to spot and correct
+for those biases. Big data sets can seem comprehensive but the ``N = All" is often a seductive illusion.
+\item The \textcolor{red}{multiple-comparisons problem}.  Statistical \textcolor{red}{correlation/patterns$\neq$Causation}.
+
+\item Big data do not solve the problem that has obsessed statisticians and scientists for centuries: the problem of
+insight, of \textcolor{red}{inferring} what is going on.  
+\item Proving the value of statistics would also come from \textcolor{red}{interdisciplinary working}.  Teaming up with computer scientists, astronomers, the bioinformatics people. 
+\item ``Big data" has arrived, but big insights have not. The challenge now is to solve new problems and gain new answers - without making the same old statistical mistakes on a grander scale than ever.
+\item[]
+}
+\end{itemize}
+\pagebreak
+
+\item David Donoho's take on \href {http://pages.cs.wisc.edu/~anhai/courses/784-fall15/50YearsDataScience.pdf}
+{\textcolor{blue}{Data Science}}
+
+{\footnotesize \it 
+\begin{itemize}
+
+\item  \textcolor{red}{Data Science is statistics} 
+
+\begin{center}
+When physicists do mathematics, they don't say they're doing number science. They're doing
+math. If you're analyzing data, you're doing statistics. You can call it data science
+or informatics or analytics or whatever, but it's still statistics. ... You may not like
+what some statisticians do. You may feel they don't share your values. They may embarrass
+you. But that shouldn't lead us to abandon the term ``statistics''. 
+(\href{http://genetics.wisc.edu/Broman.htm}{\textcolor{blue}{Karl Broman}}, Univ. Wisconsin)
+\end{center}
+\smallskip
+
+\item  \textcolor{red}{The activities of Greater Data Science are classified into 6 divisions}
+\begin{enumerate}
+\item Data Exploration and Preparation
+\item Data Representation and Transformation
+\item Computing with Data
+\item Data Modeling
+\item Data Visualization and Presentation
+\item Science about Data Science
+\end{enumerate}
+\smallskip
+\item In 2065, mathematical derivation and proof will not trump conclusions derived from state-of-the-
+art empiricism.   \textcolor{red}{Instead of deriving optimal procedures under idealized assumptions within mathematical models}, we will rigorously measure performance by empirical methods, based on the entire scientific literature or relevant subsets of it.
+\smallskip
+\item (BUT,) I am not arguing for a demotion of mathematics. I personally believe that  \textcolor{red}{mathematics offers the only way to create true breakthroughs}. The empirical method is simply a method to avoid self deception and appeals to glamor.
+\end{itemize}
+}
+\end{itemize}
+\bigskip
+
+\centerline{\bf \large The challenges are endless but so are the opportunities!}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{What's Next}
+
+\centerline{\bf Joint the Statistical Genetics community!}
+\bigskip
+
+\centerline{\bf Thank you for taking the course and hope you have enjoyed it!}
+\bigskip
+
+\centerline{\bf Make our voice heard via \alert{Course Evaluations!}}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[allowframebreaks]
+\frametitle{}
+
+\begin{itemize}
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{columns}
+\begin{column}{2in}
+
+\end{column}
+\begin{column}{2in}
+
+\end{column}
+\end{columns}
+
+\begin{figure}
+\includegraphics[width=2in]{../Figure/Book-Laird-Figure1-3}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=2in,angle=90,angle=90,angle=90]{../Figure/Genome-Cartoon}
+\end{figure}

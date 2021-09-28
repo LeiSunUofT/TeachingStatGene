@@ -1,0 +1,584 @@
+\documentclass[10pt]{beamer}
+\usetheme{Madrid}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage{pifont}
+%\usepackage{graphicx}
+%\setbeamertemplate{itemize item}{\scriptsize\raise1.25pt\hbox{\donotcoloroutermaths$\blacktriangleright$}}
+\setbeamertemplate{itemize item}{\ding{224}}
+\setbeamertemplate{itemize subitem}{\scriptsize \ding{117}}
+\setbeamertemplate{itemize subsubitem}{\tiny \raise1.25pt\hbox{\ding{107}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subtitle[Statistical Genetics] {(Fundamentals of) Statistical Genetics}
+\title{Module 14 - Family-Based Association}
+\author{Lei Sun}
+\date{}
+\institute[University of Toronto]
+{Department of Statistical Sciences, FAS \\Division of Biostatistics, DLSPH\\ University of Toronto} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{ \titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks]
+\frametitle{Outline}
+
+
+{\bf Chapter 9 - Association Analysis in Family Designs}
+\smallskip
+\begin{itemize}
+\item Transmission/Disequilibrium Test (TDT)
+\begin{itemize}
+\item	Design and data
+\item	Falk and Rubinstein’s TDT 
+\item	Spielman’s classical TDT
+\item Connection with McNemar’s test for matched-pair data
+\end{itemize}
+\smallskip
+\item Family-Based Association Test (FBAT)
+\begin{itemize}
+\item	The basic idea
+\item TDT as a special case of FBAT
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} 
+\frametitle{Transmission/Disequilibrium Tests (TDT) - Introduction}
+
+\begin{itemize}
+
+\item Family-based association study design. 
+\smallskip
+
+\item Basic principle: at a given marker locus,  a parent of an affected child passes on only one of its two allele  to the child.   {\bf The transmitted allele (case) and  the non-transmitted allele (control) are a perfect match!}
+\bigskip
+
+\item Design and data
+
+\begin{itemize}
+
+\item Sample of $n$ trios, each family has one affected child.
+\smallskip
+\item The marker is genotyped for all the individuals. 
+\item[] (It may not be possible for study of
+late age-of-onset diseases in which case the parental
+genotypes are often not observed.)
+\bigskip
+
+\begin{figure}
+\includegraphics[width=1in]{../Figure/Book-Laird-Figure-9-1}
+\end{figure}
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks]
+\frametitle{TDT - Falk and Rubinstein}
+
+\begin{itemize}
+\item Falk CF, Rubinstein P (1987).
+\href{http://www.ncbi.nlm.nih.gov/pubmed/3500674}
+{\textcolor{blue}{Haplotype relative risks: an easy reliable way to construct a proper control sample for risk calculations.}}
+Ann. Hum. Genet. 51:227-233.
+\smallskip
+
+\item Among the $4n$ parental alleles: $2n$ are transmitted (cases) 
+and $2n$ are not transmitted (controls):
+\bigskip
+
+\begin{columns}
+\begin{column}{2in}
+\begin{figure}
+\includegraphics[width=1.5in]{../Figure/Book-Laird-Figure-9-1}
+\end{figure}
+\end{column}
+\begin{column}{2in}
+\begin{center}
+\begin{tabular}{c||c|c||c} \hline \hline
+& $A$ & $a$& Total \\ \hline \hline
+TR & $x$ & $2n-x$& $2n$ \\ \hline
+NTR& $y$ & $2n-y$& $2n$ \\ \hline \hline
+Total & x+y & 4n-x-y& 4n \\ \hline \hline
+\end{tabular}
+\end{center}
+\end{column}
+\end{columns}
+\pagebreak
+
+{\scriptsize
+\begin{center}
+\begin{tabular}{c||c|c||c} \hline \hline
+& $A$ & $a$& Total \\ \hline \hline
+TR & $x$ & $2n-x$& $2n$ \\ \hline
+NTR& $y$ & $2n-y$& $2n$ \\ \hline \hline
+Total & x+y & 4n-x-y& 4n \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+\bigskip
+
+\item Hypothesis of interest:
+$$H_0: \pi_1 = \pi_2,$$
+where $\pi_1=P(A|\mbox{ transmitted})$, and $\pi_2=P(A |\mbox{ not transmitted})$.
+\bigskip
+
+\item[] Test if the cell probabilities of the two binomials are
+equal (test the homogeneity of the binomial distributions), $\hat \pi_1 = \frac{x}{2n}$ and $\hat \pi_2= \frac{y}{2n}$.
+\smallskip
+
+\item Test statistic
+$$T_1= \frac{4n(x-y)^2}{(x+y)(4n-x-y)} \sim \chi_1^2$$
+\bigskip
+
+\item The above can be derived either from the normal approximation
+to the test of two proportions:
+
+$$\frac{\frac{x}{2n} - \frac{y}{2n}}
+{\sqrt{\frac{x+y}{4n}(1-\frac{x+y}{4n})
+(\frac{1}{2n}+\frac{1}{2n})}} \sim N(0,1)$$
+\bigskip
+
+or the $\chi^2$ approximation to the test of homogeneity:
+
+$$\sum \frac {(O-E)^2}{E} \sim \chi_1^2$$
+\pagebreak
+
+\begin{columns}
+\begin{column}{2in}
+\begin{figure}
+\includegraphics[width=1.5in]{../Figure/Book-Laird-Figure-9-1}
+\end{figure}
+\end{column}
+\begin{column}{2in}
+\begin{center}
+\begin{tabular}{c||c|c||c} \hline \hline
+& $A$ & $a$& Total \\ \hline \hline
+TR & $x$ & $2n-x$& $2n$ \\ \hline
+NTR& $y$ & $2n-y$& $2n$ \\ \hline \hline
+Total & x+y & 4n-x-y& 4n \\ \hline \hline
+\end{tabular}
+\end{center}
+\end{column}
+\end{columns}
+\bigskip
+
+\item {\bf Is the test valid?}
+$$T_1= \frac{4n(x-y)^2}{(x+y)(4n-x-y)} \sim \chi_1^2 \mbox{ } ?$$
+
+{\small
+\begin{itemize}
+
+\item Assumption: transmitted ($x$) and  non-transmitted ($y$)
+should be independent, i.e. the two binomial distributions
+should be independent of each other.
+\smallskip
+\item {\bf However}, if let $n_{AA}$ be the number of parents who are homozygous
+$AA$, then 
+$$x=n_{AA}+ ... \mbox{ } \mbox{ and } \mbox{ } y=n_{AA}+...$$
+\pagebreak
+
+\item In fact, if a parent is homozygous at the marker, 
+no information is gained from the knowledge of the transmitted allele.
+\bigskip
+\item Only among heterozygous parents, $Aa$, the proportion that
+allele $A$ was transmitted to the affected offspring gives us the
+information about association (as well as linkage), and the null expectation
+is 1/2!
+\bigskip
+
+\item The test based on $T_1$ generally leads to conservative results (estimated variance is bigger than the true variance, so the test statistic is small than the correct one). 
+\end{itemize}
+}
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks]
+\frametitle{TDT}
+
+\begin{itemize}
+
+\item Chapter 9.1 of the Textbook.
+\smallskip
+
+\item Spielman RS, McGinnis RE, Ewens WJ (1993). 
+\href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1682161/}
+{\textcolor{blue}{
+Transmission test for linkage disequilibrium}}: the insulin gene region and insulin-dependent diabetes mellitus (IDDM).
+Am. J. Hum. Genet. 52:506-516.
+\bigskip
+
+\item {\bf Alternative view}: focus on the \underline{$2n$ parental genotypes} rather
+than \underline{$4n$ parental alleles}. 
+\smallskip
+
+\item Note that {\bf each genotype is a matched pair}: 
+the transmitted allele is a case, and the other one is not
+transmitted and is a control. 
+
+\item Thus, we should set up a table that exhibits the pairing: 
+\bigskip
+
+{\small
+\begin{center}
+\begin{tabular}{c||c|c||c} \hline \hline
+&\multicolumn{2}{c||}{\mbox{ } NTR allele\mbox{ } } & \\ \cline{2-3}
+\mbox{ } TR allele \mbox{ } & $A$ & $a$& Total \\ \hline \hline
+$A$ & $w$ & $x$& $w+x$ \\ \hline
+$a$& $y$ & $z$ & $y+z$ \\ \hline \hline
+Total & $w+y$ & $x+z$ & $2n$ \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+\pagebreak
+
+{\scriptsize
+\begin{center}
+\begin{tabular}{c||c|c||c} \hline \hline
+&\multicolumn{2}{c||}{\mbox{ } NTR allele\mbox{ } } & \\ \cline{2-3}
+\mbox{ } TR allele \mbox{ } & $A$ & $a$& Total \\ \hline \hline
+$A$ & $w$ & $x$& $w+x$ \\ \hline
+$a$& $y$ & $z$ & $y+z$ \\ \hline \hline
+Total & $w+y$ & $x+z$ & $2n$ \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+\smallskip
+
+\item It's easy to see that 
+\begin{itemize}
+\item $w$ is the total \# of homozygous $AA$ parents
+\item $z$ is the total \# of homozygous $aa$ parents
+\item $x+y$ is the total \# of heterozygous $Aa$ parents, among which
+\item[] $x$ is the \# of heterozygous $Aa$ parents who transmitted $A$
+\item[] $y$ is the \# of heterozygous $Aa$ parents transmitted $a$
+\end{itemize}
+\smallskip
+
+\item Connection with the previous table?
+{\scriptsize
+\begin{center}
+\begin{tabular}{c||c|c||c} \hline \hline
+& $A$ & $a$& Total \\ \hline \hline
+TR & $x^*$ & $2n-x^*$& $2n$ \\ \hline
+NTR& $y^*$ & $2n-y^*$& $2n$ \\ \hline \hline
+Total & $x^*+y^*$ & $4n-x^*-y^*$& $4n$ \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+
+\pagebreak
+
+
+\item Hypothesis of interest:
+$$H_0: \pi=\frac12,$$
+\item That is, test if the proportion of heterozygous $Aa$ parents who
+transmitted $A$, $\pi=P(A \mbox{ was transmitted} | Aa)$, is 1/2.
+\smallskip
+
+\item Test statistic
+$$T_2=\frac{(x-y)^2}{(x+y)} \sim \chi_1^2$$
+\smallskip
+
+{\small
+\item The above can be derived either from the normal approximation
+to the test of a proportion:
+$$x \sim Bino(x+y, 1/2)$$
+$$ \frac{\frac{x}{x+y}-\frac12}{\sqrt{\frac12 \frac 12 \frac{1}{x+y}}} \sim N(0,1)$$
+\smallskip
+
+\item Or as a direct application of the McNemar's test for data collected from matched-pair designs.  Here each genotype is a matched pair:  the transmitted allele is a case, and the other one is not transmitted and is a control. 
+}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Relationship Between the Two TDT Approaches}
+
+\begin{columns}
+\begin{column}{2in}
+{\scriptsize
+\begin{center}
+\begin{tabular}{c||c|c||c} \hline \hline
+&\multicolumn{2}{c||}{\mbox{ } NTR allele\mbox{ } } & \\ \cline{2-3}
+\mbox{ } TR allele \mbox{ } & $A$ & $a$& Total \\ \hline \hline
+$A$ & $w$ & $x$& $w+x$ \\ \hline
+$a$& $y$ & $z$ & $y+z$ \\ \hline \hline
+Total & $w+y$ & $x+z$ & $2n$ \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+$$T_2=\frac{(x-y)^2}{(x+y)}$$
+\end{column}
+\begin{column}{2in}
+{\scriptsize
+\begin{center}
+\begin{tabular}{c||c|c||c} \hline \hline
+& $A$ & $a$& Total \\ \hline \hline
+TR & $x*$ & $2n-x*$& $2n$ \\ \hline
+NTR& $y*$ & $2n-y*$& $2n$ \\ \hline \hline
+Total & x*+y* & 4n-x*-y*& 4n \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+$$T_1= \frac{4n(x^*-y^*)^2}{(x^*+y^*)(4n-x^*-y^*)}$$
+\end{column}
+\end{columns}
+\bigskip
+
+\begin{itemize}
+
+\item It's easy to see that 
+$$x^*=w+x, \: \: y^*=w+y$$
+
+\item So
+$$T_1=\frac{(x-y)^2}{(x+y+2w)(x+y+2z)/4n}$$
+\smallskip
+
+\item One can show that if HWE holds in the population, then the tests are asymptotically the same.
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{TDT - Some Additional Considerations}
+
+\begin{itemize}
+
+\item Can we detect association via TDT if there is linkage but no LD?
+
+\item Appendix C of the Textbook: {\it The TDT Tests for Both Linkage and Association} and page 141-142:
+\smallskip
+{\it It is a test for both linkage and association, in the sense that both linkage and association must be present in order
+for the test to reject. Said another way, if either linkage or association is absent, the
+test has no power to reject.}
+\smallskip
+\item Thus, {\bf TDT is robust to population stratificaiton!}
+\bigskip
+
+\item Need genotype data for the parents: it may not be possible for the study of late age-of-onset
+disease; it's more expensive than the population-based association approaches (Section 9.2.2 of the Textbook).
+\bigskip
+
+\item The simple TDT approach uses trio family structure so it is not flexible. 
+It looses power because it ignores certain information such as affection status of the parents, families with more than one offspring, unaffected offsprings, mode of ascertainment, effect of other covariates etc.  
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[allowframebreaks]
+\frametitle{FBAT-Introduction}
+
+\begin{itemize}
+
+\item Section 9.2  of the Textbook: {\it Family Based Association Tests: FBAT}
+
+\item[] Laird et al. (2000).
+\href{http://www.ncbi.nlm.nih.gov/pubmed/11055368}{\textcolor{blue}{
+Implementing a unified approach to family-based tests of association.}}
+\smallskip
+
+\item {\it Assuming parental genotypes are known, and that there may be multiple offspring
+in the family, the expression for the general FBAT score statistic is given by}
+$$U =\sum_{i=1,\ldots n, \: j=1, \ldots,n_i}T_{ij}  \: (X_{ij}-E(X_{ij} |P_i)),$$
+where 
+{\small
+\begin{itemize}
+\item $i$ indexes families, 
+\item $j$ indexes offspring in the $i_{th}$ family, 
+\item $X_{i j}$ denotes the coded genotype
+\item $T_{i j}$ denotes the coded trait value $Y$ of the $j_{th}$ offspring in the $i_{th}$ family
+\item $P_i$ denotes the parental genotypes, and 
+\item $n_i$ is the number of offspring in the $i_{th}$ family.
+\end{itemize}
+}
+\item To obtain the FBAT test, we normalize $U$ by its standard deviation, again computed
+under the conditional distribution of offspring genotype given $P_i$, giving a $Z$
+or a $\chi^2_1$ statistic as
+$$Z = \frac{U}{\sqrt{Var(U)}}, \: \mbox{ or } \: T = Z^2 = \frac{U^2}{Var(U)},$$
+where computation of $var(U)$ depends upon whether or not linkage is present when
+there are multiple siblings in a family. If we assume $\theta  = 1/2$ under $H_0$, then 
+$$Var(U)=\sum_{i=1,\ldots,n,\: j=1,...,n_i}T_{ij}^2 \:  Var(X_{ij}|P_i)$$
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[allowframebreaks,fragile]
+\frametitle{TDT as FBAT}
+% Add the homework for TDT as FBAT.
+
+\begin{itemize}
+\item TDT is a special case of FBAT (Section 9.3.1 of the Textbook)
+
+\begin{itemize}
+
+\item TDT uses trio design, so $n_i=1$, only one layer of summary.
+\smallskip
+
+\item TDT uses only affected offsprings, so $T_{i}=1$,  and the statistics are simplified as
+
+$$U =\sum_{i=1,\ldots, n}(X_i-E(X_i |P_i)),$$
+\smallskip
+
+$$Var(U)=\sum_{i=1,\ldots, n}Var(X_i|P_i)$$
+\pagebreak
+
+\item We need to derive the probability of an offspring genotype given parental genotype.  But we have learned this already! 
+See Table 2.1 of the Textbook or the following simplified table which we have seen before:
+
+{\scriptsize
+\begin{verbatim}
+               
+  6 parental    Offspring Genotype   
+  mating type    (in probability)       
+                 AA     Aa    aa        
+   AA x AA        1      0     0            
+   AA x Aa      1/2    1/2     0            
+   AA x aa        0      1     0            
+   Aa x Aa      1/4    1/2   1/4         
+   Aa x aa        0    1/2   1/2          
+   aa x aa        0      0     1            
+
+\end{verbatim}
+}
+
+\item The calculation of 
+$$P(X|P)$$
+would depend on the coding of $X$, e.g. Table 9.2 of the Textbook for the recessive model.
+\pagebreak
+
+{\small
+\item Let's try it systematically for the recessive model of Textbook Table 9.2}
+\end{itemize}
+\end{itemize}
+{\scriptsize
+\begin{center}
+\begin{tabular}{c|ccc|cc|ccc} \hline \hline 
+Parental genotype&aa	&Aa	&AA     & X=0 &X=1 & $E(X|P)$&$E(X^2|P)$&$Var(X|P)$ \\ \hline
+AA AA &	0  & 0  &1    &  0 & 1 & 1 & 1 &0 \\ \hline
+AA Aa&	0  &1/2 &1/2  & 1/2 & 1/2 & 1/2& 1/2 & 1/4 \\ \hline
+AA aa&	0  &	1 &  0&   1 & 0 & 0 & 0 & 0 \\ \hline
+Aa Aa&    1/4&1/2 &1/4  & 3/4 & 1/4&  1/4 & 1/4 & 3/16 \\ \hline
+Aa aa&    1/2&1/2 & 0  & 1 & 0 & 0 & 0 & 0 \\ \hline
+aa aa&	1  & 0   & 0 & 1 & 0 & 0 & 0 & 0 \\ \hline \hline
+\end{tabular} 
+\end{center}
+}
+
+
+\begin{itemize}
+\item[]
+\begin{itemize}
+{\scriptsize
+\item Only $AA, Aa$ and $Aa, Aa$ mating types have variability, thus provide information.
+\item Let $n_{AA, Aa, 0}$ be the trios such that mating type was $AA, Aa$ and the heterozygous parent $Aa$ transmitted $a$.
+Similarly define $n_{AA, Aa, 1}$. 
+\item[] And Let $n_{Aa, Aa, 1}$  be the trios such that mating type was $Aa, Aa$ and both parents transmitted $A$, $n_{Aa, Aa, 0}$ would be the remaining trios.
+$$U =\sum_{i=1,\ldots, n}(X_i-E(X_i |P_i))$$
+$$=n_{AA, Aa, 0} (0-1/2)+n_{AA, Aa, 1} (1-1/2)+  n_{Aa, Aa, 0}(0-1/4) + n_{Aa, Aa, 1} (1-1/4)$$
+$$Var(U)=\sum_{i=1,\ldots, n}Var(X_i|P_i)=\frac14n_{AA, Aa} + \frac{3}{16} n_{Aa, Aa}$$
+}
+\end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{FBAT Software}
+\begin{itemize}
+
+\item \href{http://www.hsph.harvard.edu/fbat/default.html}{\textcolor{blue}{ Family-Based Association Test Toolkit}} (Both Windows and Linux versions!)
+\bigskip
+
+
+\item FBAT features include:
+
+\begin{itemize}
+{\footnotesize \it
+\item Uses data from nuclear families, sibships, pedigrees, or any combination; provides unbiased tests with or without founder genotypes.
+\item    Analyzes dichotomous, measured, or time-to-onset traits and multiple traits; trait definition can be optimized.
+ \item   Analyzes markers on the x-chromosome with same options as autosomal marker analysis
+  \item  Offers bi-allelic and multi-allelic tests of association using standard genetic models (additive, dominant, recessive or genotype).
+  \item  Offers large sample and Monte-Carlo exact tests of the null hypothesis: no linkage and no association; offers large sample test of H0: no association.
+ \item   Estimates allele frequencies; checks Mendelian consistency.
+ \item   Tests multiple markers using haplotypes; estimates haplotype frequencies and linkage disequilibrium between pairs of markers.
+  \item  Offers three multi-marker tests for testing multiple markers simultaneously, without resolving phase or assuming no recombination.
+ \item   Offers two multiple trait tests.
+  \item  Provides weighted or unweighted tests for rare variants, with empirical variance option.
+  \item  Interactive and command driven program using standard pedigree data files; phenotype file is optional.
+}
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Exercises}
+
+\begin{itemize}
+
+
+
+\item Chapter 9 Exercise 1.
+
+\item Chapter 9 Exercise 2.
+
+\item Chapter 9 Exercise 3.
+
+\item Chapter 9 Exercise 4.
+
+\item Chapter 9 Exercise 5.
+
+
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{What's Next}
+
+\begin{itemize}
+\item Chapter 11 - Genome-wide Association Studies (GWAS)
+\item Chapter 10 - Advanced Topics
+\item Chapter 12 - Looking Towards the Future
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]
+\frametitle{}
+
+\begin{itemize}
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{columns}
+\begin{column}{2in}
+
+\end{column}
+\begin{column}{2in}
+
+\end{column}
+\end{columns}
+
+\begin{figure}
+\includegraphics[width=2in]{../Figure/Book-Laird-Figure1-3}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=2in,angle=90,angle=90,angle=90]{../Figure/Genome-Cartoon}
+\end{figure}

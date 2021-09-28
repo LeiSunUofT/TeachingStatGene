@@ -1,0 +1,978 @@
+\documentclass[10pt]{beamer}
+\usetheme{Madrid}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage{pifont}
+%\usepackage{graphicx}
+%\setbeamertemplate{itemize item}{\scriptsize\raise1.25pt\hbox{\donotcoloroutermaths$\blacktriangleright$}}
+\setbeamertemplate{itemize item}{\ding{224}}
+\setbeamertemplate{itemize subitem}{\scriptsize \ding{117}}
+\setbeamertemplate{itemize subsubitem}{\tiny \raise1.25pt\hbox{\ding{107}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subtitle[Statistical Genetics] {(Fundamentals of) Statistical Genetics}
+\title{Module 13 - Spurious Association and \\Population Stratification}
+\author{Lei Sun}
+\date{}
+\institute[University of Toronto]
+{Department of Statistical Sciences, FAS \\Division of Biostatistics, DLSPH\\ University of Toronto} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{ \titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks]
+\frametitle{Outline}
+
+
+{\bf Chapter 8 - Population Substructure in Association Studies}
+\smallskip
+
+\begin{itemize}
+
+\item Association without linkage?!
+\item An example of spurious association
+\item Spurious association and population stratification
+\begin{itemize}
+\item	Conditions for spurious association
+\item Numerical demonstration
+\item Monte Carlo simulation study, type 1 error and power
+\end{itemize}
+\item Correcting for population stratification
+\begin{itemize}
+\item	Case-control matching, family-based study
+\item	Genomic control
+\item Including population covariates
+\item Principal component analysis: use GWAS data to infer population covariates
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks]
+\frametitle{Linkage and/or Association}
+
+
+\begin{itemize}
+\item Notation:
+\centerline{$Y$: a phenotype of interest}
+\centerline{$G$: a marker under the study}
+\centerline{DSL: the disease susceptibility locus}
+
+\smallskip
+
+\item {\bf Q1: Can there be linkage but no association?} 
+\smallskip
+\item[] That is, $G$ is linked to DSL and we observe linkage evidence for G, but we don't observe association evidence between $G$ and $Y$.
+\bigskip
+\item A1: Yes.
+\smallskip
+\begin{itemize}
+ \item Association/LD is a result of tight linkage. 
+ \smallskip
+\item Linked loci may be LE. Specific alleles at different loci are independent of each other at the population level to form a haplotype (i.e. not associated), and haplotype frequency equals to product of allele frequency.
+\smallskip
+ \item In fact, we have shown analytically that LE leads to no association for both binary or normally distributed $Y$.
+\end{itemize}
+\pagebreak
+
+\item {\bf Q2: Can there be association but no linkage?}  
+\smallskip
+\item[]That is, $G$ is not linked to DSL and we do not observe linkage evidence for G, but we observe association evidence between $G$ and $Y$?
+\smallskip
+\item A2: Depends on the definition of association:
+\smallskip
+\begin{itemize}
+\item If association is defined in a narrow/genetic sense: allelic association in the presence of linkage, i.e. tight linkage/LD, then obviously there can not  be allelic association without linkage.
+\smallskip
+\item However, if association is defined in a more general/statistical term: any non-independence between $Y$ and $G$, then there can be association without linkage. 
+This is often called {\bf spurious association}. 
+\end{itemize}
+\smallskip
+\item Note that although we have shown that LD (tight linkage) leads to association or association is a result of LD, we did not say that the only cause of association is LD!
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks, fragile]
+\frametitle{An Example of Spurious Association}
+
+\begin{itemize}
+
+\item Consider a rare disease that is only or predominantly present in Caucasians (e.g. Cystic Fibrosis).
+\smallskip
+\item Consider a marker that is NOT linked to the disease locus. 
+\smallskip
+\item Suppose the marker has two alleles, M and m, with 
+frequency of allele M of $p=0.6$ in Caucasian population and $q=0.2$ in Asian population. 
+\smallskip
+\item Consider sampling from the Toronto population, and 
+assume equal proportion of Caucasians (50\%) and Asians (50\%). 
+\smallskip
+\item Take random sample of $r=100$ cases in the affected population,
+and random sample of $s=100$ controls in the unaffected population. 
+\pagebreak
+
+\item Data: 
+{\footnotesize
+\begin{center}
+\begin{tabular}{c|cc|c} \hline \hline
+ & M & m & Total \\ \hline
+ Cases  & 118 & 82  & 200 \\ \hline 
+ Controls  & 78 & 122 & 200 \\ \hline 
+  Total  & 196 & 204  & 400 \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+\bigskip
+
+\item Do we conclude that marker M is associated?
+
+\begin{itemize}
+\item Pearson's test:
+
+$$T_{obs}= 16.0064 \sim {\chi^2_1}, \: \:   \mbox{ p-value } = 6.3\times10^{-5}.$$
+
+Expected counts are
+{\footnotesize
+\begin{center}
+\begin{tabular}{c|cc|c} \hline \hline
+ & M & m & Total \\ \hline
+ Cases  & 98 & 102  & 200 \\ \hline 
+ Controls  & 98 & 102 & 200 \\ \hline 
+  Total  &196 & 204  & 400 \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+\pagebreak
+
+\item OR inference either from 2x2 Table or logistic regression  
+\href{http://www.utstat.toronto.edu/sun/statgene-R/R-statgene-module-14-association-confounding.R}{\textcolor{blue}{(R code)}}.
+
+
+{\scriptsize
+\begin{verbatim}
+> CF.data=matrix(c(118,82,78,122), byrow=T, ncol=2)
+> dimnames(CF.data)=list(Y=c("Case","Control"), X=c("M","m"))
+> CF.data
+         X
+Y           M   m
+  Case    118  82
+  Control  78 122
+
+> ## OR inference from 2x2 table
+> hat.logOR=log((CF.data[1,1]*CF.data[2,2])/(CF.data[1,2]*CF.data[2,1]))
+> se.logOR=sqrt(sum(1/CF.data))
+> z.logOR=hat.logOR/se.logOR
+> print(c(hat.logOR, se.logOR, z.logOR,2*pnorm(-z.logOR)))
+
+[1] 8.112776e-01 2.041738e-01 3.973466e+00 7.083424e-05
+
+> ## Logistic regression
+> X=c(1,0)
+> fit=glm(CF.data~X, family=binomial(logit))
+> fit.summary=summary(fit)
+> fit.summary$coefficient
+
+              Estimate Std. Error   z value     Pr(>|z|)
+(Intercept) -0.4473122  0.1449732 -3.085482 2.032226e-03
+X            0.8112776  0.2041738  3.973466 7.083419e-05
+\end{verbatim}
+}
+
+\end{itemize}
+\bigskip
+
+\item What do we expect under the null and the study design?
+
+\begin{itemize}
+\item  Cases are taken from the affected population (100\% Caucasians), so 
+$$p_{case}=p=0.6,$$
+$$E[\mbox{number of allele M } | \mbox{ Case}]=2\times 100 \times 0.6=120$$
+\smallskip
+
+\item Controls are taken from  unaffected population that is about 50\% Caucasians and 50\%  Asians, so 
+$$p_{control}= \frac12 p+\frac12 q=\frac12 0.6+\frac12 0.2=0.4,$$
+
+$$E[\mbox{number of allele M } | \mbox{ Control}]= 2\times 100 \times 0.4=80$$
+\pagebreak
+
+\begin{columns}
+\begin{column}{2in}
+\item Therefore, instead of (incorrect) expected counts as
+\smallskip
+{\footnotesize
+\begin{center}
+\begin{tabular}{c|cc|c} \hline \hline
+ & M & m & Total \\ \hline
+ Cases  & 98 & 102  & 200 \\ \hline 
+ Controls  & 98 & 102 & 200 \\ \hline 
+  Total  &196 & 204  & 400 \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+\end{column}
+\begin{column}{2in}
+\item {\bf After accounting for the population differences}, we have
+\smallskip
+{\footnotesize
+\begin{center}
+\begin{tabular}{c|cc|c} \hline \hline
+ & M & m & Total \\ \hline
+ Cases  & 120 & 80  & 200 \\ \hline 
+ Controls  & 80 & 120 & 200 \\ \hline 
+  Total  &196 & 204  & 400 \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+\end{column}
+\end{columns}
+\bigskip
+
+\item And this is much closer to the actual observation, and it would not be statistically significant if we were to do a test.
+{\footnotesize
+\begin{center}
+\begin{tabular}{c|cc|c} \hline \hline
+ & M & m & Total \\ \hline
+ Cases  & 118 & 82  & 200 \\ \hline 
+ Controls  & 78 & 122 & 200 \\ \hline 
+  Total  & 196 & 204  & 400 \\ \hline \hline
+\end{tabular}
+\end{center}
+}
+\end{itemize}
+\bigskip
+
+\item Therefore, the original observed association is {\bf spurious association 
+due to population stratification}, not due to allelic association/LD caused by
+tight linkage between the marker locus and the disease locus!
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks]
+\frametitle{Spurious Association and Population Stratification}
+% Use the c-d derivation to be consistent with the CF example.
+\begin{itemize}
+
+\item What are the conditions for spurious association in the context of population stratification?
+\smallskip
+
+\item Let's consider just two populations, \\
+a binary trait and \\
+a SNP with two alleles $M$ and $m$
+\smallskip
+
+\item Notation:\\
+\smallskip
+
+$p$: allele frequency of $M$ in population 1\\
+$q$:  allele frequency of $M$ in population 2\\
+\smallskip
+$\pi_{case}$: proportion of population 1 in cases\\
+$\pi_{control}$: proportion of population 1 in controls\\
+\smallskip
+
+\item Then if we ignore the population information, we can calculate the allele frequency of $M$ in cases and controls as
+$$p_{case}= \pi_{case} p+(1-\pi_{case}) q,$$
+$$p_{control}=  \pi_{control} p+(1-\pi_{control}) q$$
+\pagebreak
+\item  When do you see a difference in allele frequency between cases and controls?
+$$p_{case}-p_{control}=\pi_{case} p+(1-\pi_{case}) q-(\pi_{control} p+(1-\pi_{control}) q)$$
+$$=p(\pi_{case} -\pi_{control})-q(\pi_{case} -\pi_{control})$$ 
+$$=(p-q)(\pi_{case} -\pi_{control})$$ 
+\smallskip
+ 
+\item Thus, we will see a difference if
+$$p\neq q \:\: \mbox{ AND } \:\: \pi_{case} \neq \pi_{control}$$
+\smallskip
+\item That is, if allele frequency differ between two populations {\bf AND} the proportion of the populations differ between cases and controls!
+\pagebreak
+
+\item The textbook used the following notation, 
+$$c=p(case|pop1), \: \: d = p(case|pop2)$$
+and showed that 
+$$\mbox{ Diff in allele freq between cases and control} \sim (p-q)(c -d).$$ 
+ 
+\item The two approaches are equivalent (assuming that you do randomly sampling from each population):
+{\footnotesize
+$$\pi_{case}=P(pop1|case) =\frac{P(pop1, case)}{P(case)}$$
+$$=\frac{P(case|pop1)P(pop.1)}{P(case)}=\frac{cP(pop1)}{P(case)}.$$
+\smallskip
+$$\pi_{control}=P(pop1|control) =\frac{P(pop1, control)}{P(control)}.$$
+$$=\frac{P(control|pop1)P(pop1)}{P(control)}=\frac{(1-c)P(pop1)}{P(control)}.$$
+\smallskip
+
+$$\pi_{case}-\pi_{control} = \frac{P(pop1)}{P(control)P(case)} (cP(control)-(1-c)P(case)).$$
+\smallskip
+
+$$cP(control)=c\left(P(control|pop1)P(pop1)+P(control|pop2)P(pop2)\right)$$
+$$=c\left((1-c)P(pop1)+(1-d)P(pop2)\right)$$
+
+$$(1-c)P(case)=(1-c)\left(P(case|pop1)P(pop1)+P(case|pop2)P(pop2)\right)$$
+$$=(1-c)\left(cP(pop1)+dP(pop2)\right)$$
+
+$$cP(control)-(1-c)P(case)=c(1-d)P(pop2)-(1-c)dP(pop2)=(c-d)P(pop2)$$
+}
+\smallskip
+
+\item So, we have 
+$$\pi_{case}-\pi_{control} = \frac{P(pop1)P(pop2)}{P(control)P(case)} (c-d).$$
+
+\pagebreak
+
+\item Result can be generalized to arbitrary number of strata/subpopulations
+$$\mbox{ Diff in allele freq between cases and control} \sim Cov(p_k, K_k),$$
+where $p_k$ is the allele frequency, and $K_k$ is the prevalence of the disease in the ${k_{th}}$ strata/subpopulation, respectively.
+\smallskip
+
+\item {\it The absence of variation in disease rates
+or the allele frequencies over strata is sufficient to eliminate this bias. This effect is
+referred to in the statistical literature as the Simpson Paradox and confounding in the
+epidemiological literature.}
+\smallskip
+
+\item Therefore, for population based association studies, the design ({\bf proper matching between cases and controls})
+is critical!
+\bigskip
+
+\item The interpretation of an apparent association observed in a data 
+set is thus important: due to
+\begin{itemize}
+\item allelic association due to tight linkage/LD or 
+\smallskip
+\item spurious association due to omitting important covariate(s)?
+\end{itemize}  
+
+\item For a binary trait, we have shown the conditions necessary to observe spurious association is that
+if there is a correlation between the allele frequency and disease prevalence across the strata/subpopulations.
+\smallskip
+
+\item Now consider a normally distributed trait $Y$.  Do we have similar problem? What would the conditions for observing spurious association?  
+
+\item Clue in the 
+\href{http://www.utstat.toronto.edu/sun/statgene-R/R-statgene-module-14-association-confounding.R}{\textcolor{blue}{R code}}!
+
+%Now consider a normally distributed trait $Y$ and a SNP with additive coding of 0, 1 and 2 representing the number of copies of allele $M$. Let $p$ and $q$ be the allele frequency of $M$ in two population respectively, and assume mean value of $Y$  does not differ between the three genotype group within each population, i.e. no association.    
+%What would the conditions for observing spurious association?  Also write a R program to validate your derivations.  
+
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks, fragile]
+\frametitle{Spurious Association and Population Stratification - Numerical Demonstration}
+
+\begin{itemize}
+
+\item $p=q \:\: \mbox{ AND } \:\: \pi_{case} = \pi_{control}$
+
+{\tiny
+\begin{verbatim}
+> ## Allele frequency of the two populations
+> p=0.3
+> q=0.3
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.4
+> ## Sample size of cases and controls, do not have to be equal
+> n1=400
+> n2=600
+
+> summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient
+               Estimate Std. Error    z value     Pr(>|z|)
+(Intercept) -0.46145324  0.0903435 -5.1077633 3.259947e-07
+X.genotype   0.09007484  0.1010814  0.8911122 3.728690e-01
+
+> summary(glm(Y.phenotype~Z.population,family=binomial(logit)))$coefficient
+                  Estimate Std. Error       z value  Pr(>|z|)
+(Intercept)  -4.054651e-01  0.2204793 -1.839017e+00 0.0659127
+Z.population  7.255722e-15  0.1317616  5.506706e-14 1.0000000
+
+> summary(glm(Y.phenotype~X.genotype+Z.population,family=binomial(logit)))$coefficient
+                 Estimate Std. Error    z value  Pr(>|z|)
+(Intercept)  -0.458954465  0.2286848 -2.0069302 0.0447571
+X.genotype    0.090090803  0.1010902  0.8911925 0.3728259
+Z.population -0.001567924  0.1318259 -0.0118939 0.9905103
+\end{verbatim}
+}
+\pagebreak
+
+\item $p=q \:\: \mbox{ AND } \:\: \pi_{case} \neq \pi_{control}$
+
+{\tiny
+\begin{verbatim}
+> ## Allele frequency of the two populations
+> p=0.3
+> q=0.3
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.5
+> ## Sample size of cases and controls, do not have to be equal
+> n1=400
+> n2=600
+
+> summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient
+              Estimate Std. Error   z value     Pr(>|z|)
+(Intercept) -0.4748037 0.08819086 -5.383820 7.292131e-08
+X.genotype   0.1164090 0.10005365  1.163466 2.446404e-01
+
+> summary(glm(Y.phenotype~Z.population,family=binomial(logit)))$coefficient
+               Estimate Std. Error   z value     Pr(>|z|)
+(Intercept)  -1.0340738  0.2140872 -4.830152 1.364286e-06
+Z.population  0.4054651  0.1307032  3.102182 1.921001e-03
+
+> summary(glm(Y.phenotype~X.genotype+Z.population,family=binomial(logit)))$coefficient
+               Estimate Std. Error   z value     Pr(>|z|)
+(Intercept)  -1.1067262  0.2232488 -4.957367 7.145492e-07
+X.genotype    0.1188884  0.1006250  1.181500 2.374042e-01
+Z.population  0.4066405  0.1308038  3.108781 1.878611e-03
+\end{verbatim}
+}
+\pagebreak
+
+\item $p\neq q \:\: \mbox{ AND } \:\: \pi_{case} = \pi_{control}$
+
+{\tiny
+\begin{verbatim}
+## Allele frequency of the two populations
+> p=0.3
+> q=0.5
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.4
+## Sample size of cases and controls, do not have to be equal
+n1=400
+n2=600
+
+> summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient
+               Estimate Std. Error    z value     Pr(>|z|)
+(Intercept) -0.42455977 0.09917317 -4.2809943 1.860601e-05
+X.genotype   0.02302885 0.09067412  0.2539738 7.995158e-01
+
+> summary(glm(Y.phenotype~Z.population,family=binomial(logit)))$coefficient
+                  Estimate Std. Error       z value  Pr(>|z|)
+(Intercept)  -4.054651e-01  0.2204793 -1.839017e+00 0.0659127
+Z.population  7.255722e-15  0.1317616  5.506706e-14 1.0000000
+
+> summary(glm(Y.phenotype~X.genotype+Z.population,family=binomial(logit)))$coefficient
+                 Estimate Std. Error     z value   Pr(>|z|)
+(Intercept)  -0.410139406 0.22120122 -1.85414625 0.06371824
+X.genotype    0.024927706 0.09434029  0.26423182 0.79160129
+Z.population -0.009996768 0.13709525 -0.07291841 0.94187105
+
+\end{verbatim}
+}
+\pagebreak
+
+\item $p\neq q \:\: \mbox{ AND } \:\: \pi_{case} \neq \pi_{control}$
+
+{\tiny
+\begin{verbatim}
+## Allele frequency of the two populations
+p=0.3
+q=0.5
+## Proportion of population 1 in cases and controls
+pi1=0.4
+pi2=0.5
+## Sample size of cases and controls, do not have to be equal
+n1=400
+n2=600
+
+> summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient
+               Estimate Std. Error    z value     Pr(>|z|)
+(Intercept) -0.35683788 0.09540408 -3.7402791 0.0001838161
+X.genotype  -0.06268078 0.09091645 -0.6894327 0.4905510183
+
+> summary(glm(Y.phenotype~Z.population,family=binomial(logit)))$coefficient
+               Estimate Std. Error   z value     Pr(>|z|)
+(Intercept)  -1.0340738  0.2140872 -4.830152 1.364286e-06
+Z.population  0.4054651  0.1307032  3.102182 1.921001e-03
+
+> summary(glm(Y.phenotype~X.genotype+Z.population,family=binomial(logit)))$coefficient
+               Estimate Std. Error   z value     Pr(>|z|)
+(Intercept)  -1.0137710 0.21461531 -4.723666 2.316310e-06
+X.genotype   -0.1592571 0.09587491 -1.661092 9.669492e-02
+Z.population  0.4720857 0.13707363  3.444030 5.731115e-04
+\end{verbatim}
+}
+
+\item Why we did not see a significant result/spurious association here?!
+\pagebreak
+
+\item We have shown that
+$$p_{case}-p_{control}=(p-q)(\pi_{case} -\pi_{control})$$ 
+so that $p\neq q \:\: \mbox{ AND } \:\: \pi_{case} \neq \pi_{control}$ leads to $p_{case} \neq p_{control}$, but we don't always have power to `detect' it!   Or we don't always observe spurious association. 
+\bigskip
+
+\item What affects the power?
+\pagebreak
+
+\item Let's first estimate the power using Monte Carlo simulation!
+\bigskip
+
+{\tiny
+\begin{verbatim}
+# type 1 error rate
+alpha=0.05
+# number of replicates for the simulation
+N.rep=1000
+# p.value of the (incorrect) association test that could leads to spurious association
+p.value=rep(-1,N.rep)
+
+# the paramater values
+p=0.3
+q=0.5
+pi1=0.4
+pi2=0.5
+n1=400
+n2=600
+
+for (i in 1:N.rep) {
+# simulate the data	
+..................................
+# grab the p-value from the (incorrect) association analysis
+p.value[i]=summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient[2,4]
+}
+
+sum(p.value<alpha)/N.rep
+[1] 0.122
+\end{verbatim}
+}
+\pagebreak
+
+\item In case you wondered that the reason we did not see significant results when 
+$p\neq q \:\: \mbox{ AND } \:\: \pi_{case} = \pi_{control}$ is due to `lack of power':
+\bigskip
+
+{\tiny
+\begin{verbatim}
+## Allele frequency of the two populations
+> p=0.3
+> q=0.5
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.4
+## Sample size of cases and controls, do not have to be equal
+n1=400
+n2=600
+
+for (i in 1:N.rep) {
+# simulate the data	
+..................................
+# grab the p-value from the (incorrect) association analysis
+p.value[i]=summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient[2,4]
+}
+
+sum(p.value<alpha)/N.rep
+[1] 0.03
+\end{verbatim}
+}
+\smallskip
+
+Note that power here should be the type 1 error rate $\alpha$.  Depending on the number of replicates, the estimated power may vary!
+\pagebreak
+
+
+\item Similarly, in case you wondered that the reason we did not see significant results when 
+$p= q \:\: \mbox{ AND } \:\: \pi_{case} \neq \pi_{control}$ is due to `lack of power':
+\bigskip
+
+{\tiny
+\begin{verbatim}
+## Allele frequency of the two populations
+> p=0.3
+> q=0.3
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.5
+## Sample size of cases and controls, do not have to be equal
+n1=400
+n2=600
+
+for (i in 1:N.rep) {
+# simulate the data	
+..................................
+# grab the p-value from the (incorrect) association analysis
+p.value[i]=summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient[2,4]
+}
+
+sum(p.value<alpha)/N.rep
+[1] 0.046
+\end{verbatim}
+}
+\pagebreak
+
+\item Power goes up as the allele freq $p$ and $q$ differ more and/or the proportions $\pi_{case}$ and $\pi_{control}$ differ more.
+\bigskip
+
+Increase the $p$ and $q$ difference, but keep the $\pi_{case}$ and $\pi_{control}$ difference.
+\bigskip
+
+{\tiny
+\begin{verbatim}
+## Allele frequency of the two populations
+> p=0.3
+> q=0.7
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.5
+## Sample size of cases and controls, do not have to be equal
+n1=400
+n2=600
+
+for (i in 1:N.rep) {
+# simulate the data	
+..................................
+# grab the p-value from the (incorrect) association analysis
+p.value[i]=summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient[2,4]
+}
+
+sum(p.value<alpha)/N.rep
+[1] 0.367
+\end{verbatim}
+}
+\pagebreak
+
+Keep the $p$ and $q$ difference, but increase the $\pi_{case}$ and $\pi_{control}$ difference.
+\bigskip
+
+{\tiny
+\begin{verbatim}
+## Allele frequency of the two populations
+> p=0.3
+> q=0.5
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.6
+## Sample size of cases and controls, do not have to be equal
+n1=400
+n2=600
+
+for (i in 1:N.rep) {
+# simulate the data	
+..................................
+# grab the p-value from the (incorrect) association analysis
+p.value[i]=summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient[2,4]
+}
+
+sum(p.value<alpha)/N.rep
+[1] 0.43
+\end{verbatim}
+}
+\pagebreak
+
+Increase the $p$ and $q$ difference, and also increase the $\pi_{case}$ and $\pi_{control}$ difference.
+\bigskip
+
+{\tiny
+\begin{verbatim}
+## Allele frequency of the two populations
+> p=0.3
+> q=0.7
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.6
+## Sample size of cases and controls, do not have to be equal
+n1=400
+n2=600
+
+for (i in 1:N.rep) {
+# simulate the data	
+..................................
+# grab the p-value from the (incorrect) association analysis
+p.value[i]=summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient[2,4]
+}
+
+sum(p.value<alpha)/N.rep
+[1] 0.947
+\end{verbatim}
+}
+\pagebreak
+
+\item Obviously, power goes up as we increase n.
+
+Keep the $p$ and $q$ difference, and keep the $\pi_{case}$ and $\pi_{control}$ difference, but increase the sample size
+\bigskip
+
+{\tiny
+\begin{verbatim}
+## Allele frequency of the two populations
+> p=0.3
+> q=0.5
+> ## Proportion of population 1 in cases and controls
+> pi1=0.4
+> pi2=0.5
+## Sample size of cases and controls, do not have to be equal
+n1=4000
+n2=6000
+
+for (i in 1:N.rep) {
+# simulate the data	
+..................................
+# grab the p-value from the (incorrect) association analysis
+p.value[i]=summary(glm(Y.phenotype~X.genotype,family=binomial(logit)))$coefficient[2,4]
+}
+
+sum(p.value<alpha)/N.rep
+[1] 0.86
+\end{verbatim}
+}
+
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Correcting for Population Stratification - Design}
+
+\begin{itemize}
+
+\item Better design: try to match the cases and controls by 
+age, sex, ethnicity, environmental exposures, etc. 
+\smallskip
+
+\item[] Generally, it's difficult to sample well matched cases and control,
+especially recruiting appropriate controls matched for 
+ethnicity in admixed population such as New York. 
+\bigskip
+
+
+\item Can we use discordant sib-pair: affected sibs as cases and unaffected sibs as controls? 
+\begin{itemize}
+\item Cases and controls are not independent 
+samples anymore.  The dependence must be take into account
+in the analysis. 
+\smallskip
+\item May hard to collect such families. 
+\end{itemize}
+\bigskip
+
+\item We will study Transmission/Disequilibrium Tests (TDT) and more generally Family Based Association Tests (FBAT).
+
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks]
+\frametitle{Correcting for Population Stratification - GC Control}
+
+\begin{itemize}
+\item Devlin B, Roeder K, Wasserman L (2001). \href{http://www.ncbi.nlm.nih.gov/pubmed/11855950}{\textcolor{blue}{
+Genomic control, a new approach to genetic-based association studies.}}
+%Theoretical Population Biology. 60:155-166.  
+\smallskip
+
+\item Chapter 8.2 of the Textbook.
+\smallskip
+\begin{figure}
+\includegraphics[width=3in]{../Figure/Book-Laird-Box-8-1}
+\end{figure}
+
+\pagebreak
+{\small
+\item Typically, we define GC lambda as
+$$ \lambda = \frac{median (\chi^2_1, \ldots, \chi^2_L)}{0.4549}.$$
+\item[] If  $\lambda>1.05$, it indicates population stratification, and use the corrected association statistic:
+$$ \chi^2_{l, GC} = \frac{\chi^2_l}{\lambda}, \forall l=1,\ldots, L.$$
+
+\item Basic principle: 
+\begin{itemize}
+\item At the genome-wide level, the majority of the SNPs/loci should not be associated with the trait of interest.
+\item If many SNPs show association evidence, then it is an evidence for population stratification.
+\item Compare the $median (\chi^2_1, \ldots, \chi^2_L)$ with the expected the value of 0.4549 under the null of no association, and the ratio provides a measure of the inflation due to population stratification.
+\item Population stratification should affect all loci ``equally'', i.e. leads to similar inflation across SNPs, under certain assumptions.
+\item So we adjust each test statistic by rescaling with the inflation factor GC $\lambda$.
+\end{itemize}
+}
+\pagebreak
+
+\item We will come back to this in genome-wide association studies (GWAS).
+\begin{figure}
+\includegraphics[width=1.5in]{../Figure/Daly-etal-Figure-2}
+\end{figure}
+\pagebreak
+
+\item Recent development:  
+\href{http://www.nature.com/ng/journal/v47/n3/full/ng.3211.html}
+{\textcolor{blue}{LD Score regression distinguishes confounding from polygenicity in genome-wide association studies}}.
+\bigskip
+
+{\it \small
+Both polygenicity (many small genetic effects) and confounding biases, such as cryptic relatedness and population stratification, can yield an inflated distribution of test statistics in genome-wide association studies (GWAS). However, current methods cannot distinguish between inflation from a true polygenic signal and bias. }
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks, fragile]
+\frametitle{Correcting for Population Stratification - Covariates}
+
+\begin{itemize}
+
+\item If we knew the population index, then we could include it as a covariate, we will not have the problem:
+
+{\tiny
+\begin{verbatim}
+# the parameter values
+p=0.3
+q=0.7
+pi1=0.4
+pi2=0.6
+n1=400
+n2=600
+
+for (i in 1:N.rep) {
+# simulate the data	
+..............................................................
+# grab the p-value from the (incorrect) association analysis
+p.value[i]=summary(glm(Y.phenotype~X.genotype+Z.population,family=binomial(logit)))$coefficient[2,4]
+}
+
+# estimate the power
+sum(p.value<alpha)/N.rep
+[1] 0.047
+\end{verbatim}
+}
+\pagebreak
+
+\item What if we do not have such information?!
+\bigskip
+
+\item Structured association methods.  
+
+\begin{itemize}
+\item Pritchard JK, Donnelly PJ (2001).
+\href{http://www.ncbi.nlm.nih.gov/pubmed/11855957}{\textcolor{blue}{
+Cased-control studies of association in structured or admixed populations. }}
+\smallskip
+
+\item Basic principle: {\it additional genotype information is used to estimate both
+the number of subpopulations and the subpopulation
+to which each sampled individual belongs.}
+\smallskip
+
+\item Difficulties: the number of populations in the sample is an unknown parameter. 
+In the context of admixture populations, it is difficult to assign each sample to one subpopulation.
+\end{itemize}
+\pagebreak
+
+\item Principal Component Analysis (PCA).
+
+\begin{itemize}
+
+\item Price et al. (2006). \href{http://www.nature.com/ng/journal/v38/n8/full/ng1847.html}{\textcolor{blue}{Principal components analysis corrects for stratification in genome-wide association studies.}} Nature Genetics 38:904-909.
+\smallskip
+
+\item Chapter 8.4 of the Textbook.
+\smallskip
+\begin{figure}
+\includegraphics[width=2.5in]{../Figure/Book-Laird-Box-8-2}
+\end{figure}
+\pagebreak
+
+\item  Basic principle: the top principle components capture the population differences between samples. Then you can incorporate them in your association regression model as covariates.  
+\smallskip
+
+\item Unlike the structured methods, the population covariates are on a continuous scale; do not need to assume exclusive populations, i.e. allow for admixture populations.
+\bigskip
+
+\item Any pitfalls of PCA?
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [allowframebreaks]
+\frametitle{Software}
+
+\centerline{\bf {With great method comes great responsibility}}
+\centerline{\bf \alert{develop user-friendly programs/software packages!}}
+\bigskip
+
+\begin{itemize}
+
+\item \href{http://www.hsph.harvard.edu/alkes-price/software/}{\textcolor{blue}{ EIGENESOFT/EIGENSTRAT}}
+\smallskip
+
+\begin{itemize}
+{\footnotesize \it
+\item The EIGENSOFT package combines functionality from our population genetics methods (Patterson et al. 2006) and our EIGENSTRAT stratification correction method (Price et al. 2006). 
+\smallskip
+\item The EIGENSTRAT method uses {\bf principal components analysis} to explicitly model ancestry differences between cases and controls along continuous axes of variation; the resulting correction is specific to a candidate markerÕs variation in frequency across ancestral populations, minimizing spurious associations while maximizing power to detect true associations.
+\smallskip
+\item The EIGENSOFT package has a built-in plotting script and supports multiple file formats and quantitative phenotypes.
+}
+\end{itemize}
+\pagebreak
+
+\item \href{http://pngu.mgh.harvard.edu/~purcell/plink/}{\textcolor{blue}{PLINK}}
+\smallskip
+\begin{itemize}
+{\footnotesize \it
+\item PLINK is a free, open-source whole genome association analysis toolset, designed to {\bf perform a range of basic, large-scale analyses in a computationally efficient manner}.
+\smallskip
+\item The focus of PLINK is purely on analysis of genotype/phenotype data, so there is no support for steps prior to this (e.g. study design and planning, generating genotype or CNV calls from raw data). Through integration with gPLINK and Haploview, there is some support for the subsequent visualization, annotation and storage of results.
+\smallskip 
+}
+{\footnotesize 
+\item Key reference: \href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1950838/}{\textcolor{blue}{Purcell et al (2007)}}.
+        PLINK: a toolset for whole-genome association and population-based 
+	linkage analysis. American Journal of Human Genetics.
+}
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Exercises}
+
+\begin{itemize}
+\item Connection with Big Data!
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{What's Next}
+
+\begin{itemize}
+\item  Chapter 9 - Association Analysis in Family Designs
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]
+\frametitle{}
+
+\begin{itemize}
+
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{columns}
+\begin{column}{2in}
+
+\end{column}
+\begin{column}{2in}
+
+\end{column}
+\end{columns}
+
+\begin{figure}
+\includegraphics[width=2in]{../Figure/Book-Laird-Figure1-3}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=2in,angle=90,angle=90,angle=90]{../Figure/Genome-Cartoon}
+\end{figure}
